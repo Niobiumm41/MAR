@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Праздничный Кроссовер: Выбери своего фаворита 💖</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #0b0711;
+            color: #f3f4f6;
+            font-family: 'Georgia', serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        #game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            max-width: 800px;
+            max-height: 600px;
+            background: radial-gradient(circle, #211531 0%, #0b0711 100%);
+            background-size: cover;
+            background-position: center;
+            border: 3px solid #a855f7;
+            box-shadow: 0 0 30px rgba(168, 85, 247, 0.3);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow: hidden;
+            transition: background-image 0.5s ease;
+        }
+        #sprite-container {
+            position: absolute;
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            height: 50%;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #character-sprite {
+            max-height: 100%;
+            width: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 0 20px rgba(168, 85, 247, 0.5));
+            transition: opacity 0.2s ease;
+        }
+        #dialogue-box {
+            background: rgba(15, 10, 25, 0.95);
+            border: 2px solid #a855f7;
+            border-radius: 10px;
+            padding: 20px;
+            min-height: 140px;
+            z-index: 2;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+        }
+        #speaker-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #c084fc;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        #dialogue-text {
+            font-size: 16px;
+            line-height: 1.5;
+            color: #e5e7eb;
+        }
+        #choices-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+            z-index: 2;
+        }
+        .choice-btn {
+            background: #191026;
+            color: #f3f4f6;
+            border: 1px solid #6b21a8;
+            border-radius: 8px;
+            padding: 12px 15px;
+            font-size: 14px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+            font-family: 'Georgia', serif;
+        }
+        .choice-btn:hover {
+            background: #6b21a8;
+            border-color: #a855f7;
+            transform: translateX(5px);
+            box-shadow: 0 0 10px rgba(168,85,247,0.4);
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div id="sprite-container">
+            <img id="character-sprite" src="" alt="Персонаж" style="display: none;">
+        </div>
+        <div id="dialogue-box">
+            <div id="speaker-name">Рассказчик</div>
+            <div id="dialogue-text">Загрузка вселенной...</div>
+        </div>
+        <div id="choices-container"></div>
+    </div>
+
+<script>
+    const gameContainer = document.getElementById('game-container');
+    const characterSprite = document.getElementById('character-sprite');
+    const speakerName = document.getElementById('speaker-name');
+    const dialogueText = document.getElementById('dialogue-text');
+    const choicesContainer = document.getElementById('choices-container');
+
+    const story = {
+        start: {
+            speaker: "Праздничный Зал",
+            text: "Ты открываешь глаза в роскошном зале, залитом неоновым светом, адским пламенем и блеском хекстека одновременно. Сегодня твой День Рождения, и поздравить тебя пришли трое мужчин, каждый из которых готов на всё ради твоего внимания. Кто подойдёт к тебе первым?",
+            sprite: null, // На стартовом экране нет персонажа
+            bg: "zal.png",
+            choices: [
+                { text: "Подойти к Рафаилу, который вальяжно крутит бокал вина", next: "raphael_approach" },
+                { text: "Подойти к Дотторе, чья маска загадочно поблескивает в темноте", next: "dottore_approach" },
+                { text: "Подойти к Виктору, который отвлекся от своих чертежей и тепло улыбнулся", next: "viktor_approach" }
+            ]
+        },
+        // --- ВЕТКА РАФАИЛА ---
+        raphael_approach: {
+            speaker: "Рафаил",
+            text: "Какое восхитительное зрелище... Моя дорогая мышка празднует свой день. Забудь про этих дилетантов: один слишком увлечен железом, второй — трупами. Позволь истинному мастеру искушения укутать тебя в шелка Дома Надежды. Контракт на вечное счастье и безумную страсть уже ждет твоего поцелуя. Согласна?",
+            sprite: "raphael.png",
+            bg: "zal.png",
+            choices: [
+                { text: "«Я выбираю тебя, Рафаил. Увези меня в свою преисподнюю»", next: "raphael_win" },
+                { text: "«Твой флирт хорош, но я хочу послушать остальных»", next: "start" }
+            ]
+        },
+        raphael_win: {
+            speaker: "Рафаил",
+            text: "*(Смеется своим бархатным, театральным смехом)* Прекрасный выбор! Все дедлайны материального мира сгорают прямо сейчас. Весь следующий год Фаэрун будет лежать у твоих ног, а каждый твой кубик будет выбрасывать только 20! С Днем Рождения, любовь моя. Мы отправляемся домой. 😉🎂🔥",
+            sprite: "raphael_win.png",
+            bg: "zal.png",
+            choices: [
+                { text: "Вернуться в начало кроссовера 🔄", next: "start" }
+            ]
+        },
+        // --- ВЕТКА ДОТТОРЕ ---
+        dottore_approach: {
+            speaker: "Дотторе",
+            text: "Хм, объект твоего масштаба заслуживает куда более... глубокого изучения. Рождение смертного — забавный феномен. В честь твоего праздника я готов отложить все свои эксперименты в Сумеру. Позволь мне стать твоим личным Предвестником. Обещаю, со мной твоя жизнь никогда не будет скучной. Проведем пару приватных опытов над твоим праздничным настроением?",
+            sprite: "dottore.png",
+            bg: "zal.png",
+            choices: [
+                { text: "«Дотторе, твое безумие меня очаровывает. Я выбираю тебя»", next: "dottore_win" },
+                { text: "«Звучит опасно, я лучше поговорю с кем-то другим»", next: "start" }
+            ]
+        },
+        dottore_win: {
+            speaker: "Дотторе",
+            text: "*(Его ухмылка становится шире, а пальцы в перчатках нежно касаются твоего подбородка)* Мудрое решение. Твой уровень эйфории под моим контролем достигнет максимума. Желаю тебе безграничной энергии, гениальных идей и пусть никакие Архонты не посмеют испортить твой идеальный год! С праздником, мой лучший эксперимент. Сумеру подождет. 💙✨",
+            sprite: "dottore_win.png",
+            bg: "zal.png",
+            choices: [
+                { text: "Вернуться в начало кроссовера 🔄", next: "start" }
+            ]
+        },
+        // --- ВЕТКА ВИКТОРА ---
+        viktor_approach: {
+            speaker: "Виктор",
+            text: "*(Он слегка опирается на свою трость и смотрит на тебя с искренним теплом)* Знаешь... наука и технологии отнимают у меня всё время, но ради твоего Дня Рождения я готов остановить работу над Хекс-ядром. Рафаил обещает замки, Дотторе — безумие, а я... я просто хочу, чтобы ты была счастлива. Мы можем изменить этот мир вместе. Славная эволюция подождет, пока я поздравляю тебя. Останешься со мной?",
+            sprite: "viktor.png",
+            bg: "zal.png",
+            choices: [
+                { text: "«Виктор, твоё сердце прекраснее любого хекстека. Я выбираю тебя»", next: "viktor_win" },
+                { text: "«Ты милый, Виктор, но меня манят плохие парни»", next: "start" }
+            ]
+        },
+        viktor_win: {
+            speaker: "Виктор",
+            text: "*(Его глаза светятся мягким янтарным светом, он берет тебя за руку)* Спасибо... Твое присутствие — лучшая синергия в моей жизни. Желаю тебе невероятного здоровья, железной стойкости перед любыми жизненными бурями и чтобы каждый твой проект заканчивался грандиожным успехом. С Днем Рождения. Сегодня мы празднуем только твою личную эволюцию! 💖🔧",
+            sprite: "viktor_win.png",
+            bg: "zal.png",
+            choices: [
+                { text: "Вернуться в начало кроссовера 🔄", next: "start" }
+            ]
+        }
+    };
+
+    function renderNode(nodeKey) {
+        const node = story[nodeKey];
+        if (!node) return;
+
+        // Обновление спрайта персонажа
+        if (node.sprite) {
+            characterSprite.src = node.sprite;
+            characterSprite.style.display = "block";
+        } else {
+            characterSprite.style.display = "none";
+        }
+
+        // Обновление фона зала
+        if (node.bg) {
+            gameContainer.style.backgroundImage = `url('${node.bg}')`;
+        }
+
+        // Текст диалога
+        speakerName.textContent = node.speaker;
+        dialogueText.textContent = node.text;
+        choicesContainer.innerHTML = '';
+
+        // Отрисовка кнопок
+        node.choices.forEach(choice => {
+            const button = document.createElement('button');
+            button.className = 'choice-btn';
+            button.textContent = choice.text;
+            button.addEventListener('click', () => renderNode(choice.next));
+            choicesContainer.appendChild(button);
+        });
+    }
+
+    // Инициализация игры
+    renderNode('start');
+</script>
+</body>
+</html>
