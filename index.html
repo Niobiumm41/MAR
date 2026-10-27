@@ -28,50 +28,88 @@
       background: url('fon.jpg') center center / cover no-repeat;
       display: flex;
       flex-direction: column;
-      justify-content: flex-end; /* Элементы прижаты к низу */
+      justify-content: flex-end; 
       padding: 16px;
+    }
+
+    /* Единый контейнер для персонажа и текста */
+    #bottom-ui-group {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center; 
     }
 
     /* Контейнер для спрайта персонажа */
     #character-container {
       width: 100%;
       display: flex;
-      justify-content: center; /* Центрируем персонажа по горизонтали */
+      justify-content: center; 
       align-items: flex-end;
-      flex-grow: 1; /* Занимает все свободное пространство над текстом */
-      margin-bottom: -10px; /* Слегка заводим персонажа за текстовое поле для эффекта глубины */
-      z-index: 1;
-      pointer-events: none; /* Чтобы клики проходили сквозь пустое место спрайта */
+      height: auto;
+      margin-bottom: 0 !important; 
+      padding: 0 !important;
+      line-height: 0; 
     }
 
-    /* Стили самого изображения персонажа */
     #character-img {
-      max-width: 85%; /* Чтобы персонаж не был слишком огромным на экране телефона */
-      max-height: 50vh; /* Ограничиваем высоту до половины экрана */
+      max-width: 85%; 
+      max-height: 50vh; 
       object-fit: contain;
-      display: none; /* Появляется только когда задан в JS */
-      /* Плавное появление персонажа */
+      display: none; 
+      margin-bottom: 0 !important;
+      padding: 0 !important;
+      display: block;
       animation: fadeIn 0.4s ease-out;
+    }
+
+    /* Общий блок интерфейса (имя + текст) */
+    #interface-container {
+      position: relative; /* Создаем контекст позиционирования для имени */
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      margin-top: 0 !important; 
+    }
+
+     /* Увеличенное и более заметное окошко для имени персонажа */
+    #name-box {
+      position: absolute; 
+      bottom: 100%; 
+      left: 0;
+      padding: 8px 24px; /* Увеличили внутренние отступы */
+      font-size: 18px; /* Сделали шрифт крупнее */
+      font-weight: 650; /* Сделали текст еще более жирным */
+      color: #ffffff;
+      background: rgba(10, 10, 20, 0.7); /* Сделали фон чуть темнее, чтобы буквы сильнее выделялись */
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.2); /* Сделали рамку чуть ярче */
+      border-bottom: none; 
+      border-radius: 10px 10px 0 0; 
+      display: none; 
+      letter-spacing: 1px; /* Слегка растянули буквы для красивого эффекта */
+      box-shadow: 0 -4px 12px rgba(0,0,0,0.2);
+      z-index: 3; 
     }
 
     /* Полупрозрачное диалоговое окно */
     #dialogue-box {
-      position: relative;
-      z-index: 2; /* Чтобы текст всегда был поверх персонажа */
       width: 100%;
-      min-height: 140px;
+      min-height: 130px;
       max-height: 40vh;
       background: rgba(15, 15, 25, 0.4); 
       backdrop-filter: blur(16px); 
       -webkit-backdrop-filter: blur(16px);
       border: 1px solid rgba(255, 255, 255, 0.12); 
-      border-radius: 16px;
+      border-radius: 16px; 
       padding: 16px 20px 12px 20px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       color: #ffffff;
-      box-shadow: 0 4px 24px 0 rgba(0, 0, 0, 0.2);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.25);
+      z-index: 2;
     }
 
     #text-box {
@@ -99,7 +137,6 @@
       transform: scale(0.97);
     }
 
-    /* Маленькая кнопка "Далее" справа */
     #next-btn {
       align-self: flex-end; 
       padding: 8px 20px;
@@ -112,7 +149,6 @@
       background: rgba(255, 255, 255, 0.3);
     }
 
-    /* Кнопки выбора */
     #choices-container {
       display: none;
       flex-direction: column;
@@ -131,7 +167,6 @@
       background: linear-gradient(135deg, rgba(106, 17, 203, 0.65), rgba(37, 117, 252, 0.65));
     }
 
-    /* Анимация плавного появления */
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
@@ -141,72 +176,115 @@
 <body>
 
   <div id="game-container">
-    <!-- Контейнер для отображения персонажей -->
-    <div id="character-container">
-      <img id="character-img" src="" alt="Персонаж">
+    
+    <div id="bottom-ui-group">
+      
+      <!-- Спрайт персонажа теперь физически падает прямо на блок диалога -->
+      <div id="character-container">
+        <img id="character-img" src="" alt="Персонаж">
+      </div>
+
+      <div id="interface-container">
+        <!-- Окошко имени парит "над" версткой и ничего не сдвигает -->
+        <div id="name-box">Имя</div>
+        
+        <div id="dialogue-box">
+          <div id="text-box">Загрузка истории...</div>
+          
+          <div id="controls">
+            <button id="next-btn" class="clickable">>></button>
+            <div id="choices-container"></div>
+          </div>
+        </div>
+      </div>
+
     </div>
 
-    <!-- Диалоговое окно -->
-    <div id="dialogue-box">
-      <div id="text-box">Загрузка истории...</div>
-      
-      <div id="controls">
-        <button id="next-btn" class="clickable">Далее →</button>
-        <div id="choices-container"></div>
-      </div>
-    </div>
   </div>
 
   <script>
-    // В базу данных добавлен параметр characterImg. 
-    // Замените названия файлов на свои (например: 'hero_scared.png', 'monster.png')
     const story = [
       { 
         id: 1, 
         text: "Ты открываешь глаза в роскошном зале, залитом неоновым светом, адским пламенем и блеском хекстека одновременно.", 
         type: "text", 
         next: 2,
-        characterImg: null // В начале никого нет
+        characterName: null,
+        characterImg: null 
       },
       { 
         id: 2, 
-        text: "Сегодня твой День Рождения, и поздравить тебя пришли трое мужчин, каждый из которых готов на всё ради твоего внимания.", 
+        text: "Сегодня твой День Рождения, и поздравить тебя пришли трое гостей, каждый из которых готов на всё ради твоего внимания.", 
         type: "text", 
         next: 3,
+        characterName: null,
         characterImg: null 
       },
       { 
         id: 3, 
-        text: "Кто подойдёт к тебе первым?", 
+        text: "К кому ты подойдешь?",
         type: "choice", 
         choices: [
           { text: "Подойти к Рафаилу, который вальяжно крутит бокал вина", next: 4 },
           { text: "Подойти к Дотторе, чья маска загадочно поблескивает в темноте", next: 5 },
           { text: "Подойти к Виктору, который отвлекся от своих чертежей и тепло улыбнулся", next: 6 }
         ],
-        characterImg: null // Окно выбора, персонаж появится ПОСЛЕ нажатия
+        characterName: null,
+        characterImg: null 
       },
-      // Сцены после выбора (здесь появляются картинки персонажей):
+      /*Блок Рафаила*/
       { 
         id: 4, 
-        text: "Вы трижды стучите по металлу. Из темноты за вашей спиной внезапно появляется Проводник: «Зачем ты шумишь?»", 
+        text: "Какое восхитительное зрелище... Моя дорогая мышка празднует свой день. Забудь про этих дилетантов: один слишком увлечен железом, второй - трупами.", 
         type: "text", 
-        next: null,
-        characterImg: 'raphael.png' // Картинка для этого выбора
+        next: 4.1,
+        characterName: "Рафаил",
+        characterImg: 'raphael.png' 
       },
+      { 
+        id: 4.1, 
+        text: "Позволь истинному мастеру искушения укутать тебя в шелка Дома Надежды.", 
+        type: "text", 
+        next: 4.2,
+        characterName: "Рафаил",
+        characterImg: 'raphael.png' 
+      },
+       { 
+        id: 4.2, 
+        text: "Контракт на вечное счастье и безумную страсть уже ждет твоего поцелуя. Согласна?", 
+        type: "choice", 
+        choices: [
+          { text: "«Я выбираю тебя, Рафаил. Увези меня в свою преисподнюю»", next: 4.3 },
+          { text: "«Твой флирт хорош, но я хочу послушать остальных»", next: 3 }
+        ],
+        characterName: "Рафаил",
+        characterImg: 'raphael.png' 
+      },
+         { 
+        id: 4.3, 
+        text: "(Смеется своим бархатным, театральным смехом) Прекрасный выбор! Все дедлайны материального мира сгорают прямо сейчас. Весь следующий год Фаэрун будет лежать у твоих ног, а каждый твой кубик будет выбрасывать только 20!", 
+        type: "choice", 
+        choices: [
+            { text: "Начать с начала", next: 1 }
+            ]
+      },
+      /*Блок Дотторе*/
       { 
         id: 5, 
-        text: "Вы дергаете ручку! Дверь распахивается, и на вас бросается жуткий Призрак!", 
+        text: "«О, новый пациент? Как удачно. Мой эксперимент как раз требовал свежих данных».", 
         type: "text", 
         next: null,
-        characterImg: 'dottore.png' // Картинка для этого выбора
+        characterName: "Дотторе",
+        characterImg: 'dottore.png' 
       },
+      /*Блок Виктора*/
       { 
         id: 6, 
-        text: "Страх берет верх. Вы бежите обратно, но дорогу вам преграждает Незнакомец в плаще.", 
+        text: "«Куда же ты так спешишь? Самое интересное только начинается».", 
         type: "text", 
         next: null,
-        characterImg: 'viktor.png' // Картинка для этого выбора
+        characterName: "Виктор",
+        characterImg: 'viktor.png' 
       }
     ];
 
@@ -216,20 +294,29 @@
       const scene = story.find(s => s.id === currentStep);
       if (!scene) return;
 
-      // 1. Управление текстом
       document.getElementById("text-box").innerText = scene.text;
       
-      // 2. Управление картинкой персонажа
+      const nameBox = document.getElementById("name-box");
+      const dialogueBox = document.getElementById("dialogue-box");
+      
+      if (scene.characterName) {
+        nameBox.innerText = scene.characterName;
+        nameBox.style.display = "block";
+        dialogueBox.style.borderTopLeftRadius = "0px";
+      } else {
+        nameBox.style.display = "none";
+        dialogueBox.style.borderTopLeftRadius = "16px";
+      }
+      
       const charImgElement = document.getElementById("character-img");
       if (scene.characterImg) {
         charImgElement.src = scene.characterImg;
         charImgElement.style.display = "block";
       } else {
         charImgElement.style.display = "none";
-        charImgElement.src = ""; // Очищаем путь, если персонажа нет
+        charImgElement.src = ""; 
       }
       
-      // 3. Управление кнопками
       const nextBtn = document.getElementById("next-btn");
       const choicesContainer = document.getElementById("choices-container");
       
@@ -244,7 +331,7 @@
             currentStep = scene.next;
             renderScene();
           } else {
-            alert("Конец игры!");
+            alert("Конец демо-версии!");
           }
         };
       } else if (scene.type === "choice") {
