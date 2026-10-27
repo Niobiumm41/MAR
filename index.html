@@ -311,7 +311,7 @@
       },
       { 
         id: 5.2, 
-        text: "Рождение смертного - забавный феномен. В честь твоего праздника я готов отложить все свои эксперименты. Позволь мне стать твоей личной ящеркой.", 
+        text: "В честь твоего праздника я готов отложить все свои эксперименты. Позволь мне стать твоей личной ящерицей - но помни, за каждым моим хладнокровным движением скрывается чисто научный интерес к твоей анатомии».", 
         type: "text", 
         next: 5.3,
         characterName: "Дотторе",
@@ -405,6 +405,23 @@
 
     let currentStep = 1;
 
+      // ФУНКЦИЯ ПРЕДЗАГРУЗКИ КАРТИНОК В ПАМЯТЬ ТЕЛЕФОНА
+    function preloadImages() {
+      // Собираем все непустые пути к спрайтам из истории
+      const imagesToLoad = story
+        .map(scene => scene.characterImg)
+        .filter(img => img !== null);
+
+      // Удаляем дубликаты, чтобы не качать одно и то же дважды
+      const uniqueImages = [...new Set(imagesToLoad)];
+
+      // Создаем скрытые объекты Image в памяти браузера, заставляя его скачать файлы заранее
+      uniqueImages.forEach(src => {
+        const img = new Image();
+        img.src = src;
+      });
+    }
+
     function renderScene() {
       const scene = story.find(s => s.id === currentStep);
       if (!scene) return;
@@ -466,7 +483,12 @@
       }
     }
 
-    window.onload = renderScene;
+    // Запуск предзагрузки и инициализация первой сцены
+    window.onload = () => {
+      preloadImages(); // Кэшируем картинки
+      renderScene();   // Показываем первый экран
+    };
+    
   </script>
 </body>
 </html>
